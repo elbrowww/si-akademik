@@ -1,0 +1,148 @@
+/* GLOBAL */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.btn {
+    border-radius: 8px;
+}
+
+
+/* LOGIN */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 450px;
+}
+
+.login-card .card {
+    border-radius: 15px;
+}
+
+.login-card h2 {
+    font-weight: 700;
+}
+
+
+/* DASHBOARD */
+
+.dashboard-container {
+    margin-top: 50px;
+}
+
+.dashboard-card {
+    border-radius: 12px;
+}
+
+.dashboard-card h1 {
+    font-weight: 700;
+}
+
+
+/* MAHASISWA */
+
+.mahasiswa-container {
+    margin-top: 40px;
+}
+
+.mahasiswa-card {
+    border-radius: 12px;
+}
+
+.mahasiswa-card h1,
+.mahasiswa-card h2 {
+    font-weight: 700;
+}
+
+
+/* DOSEN */
+
+.dosen-container {
+    margin-top: 40px;
+}
+
+.dosen-card {
+    border-radius: 12px;
+}
+
+.dosen-card h1,
+.dosen-card h2 {
+    font-weight: 700;
+}
+
+
+/* TABLE */
+
+.table {
+    vertical-align: middle;
+}
+
+.table th {
+    font-weight: 600;
+}
+
+.table td,
+.table th {
+    padding: 12px;
+}
+
+
+/* FORM */
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow: none;
+}
+
+
+/* NAVIGATION BUTTON */
+
+.page-navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.page-navigation .btn {
+    min-width: 150px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 576px) {
+
+    .dashboard-container,
+    .mahasiswa-container,
+    .dosen-container {
+        margin-top: 20px;
+    }
+
+    .page-navigation {
+        flex-direction: column;
+    }
+
+    .page-navigation .btn {
+        width: 100%;
+    }
+}
