@@ -1,5 +1,10 @@
 <?php
 
+require_once __DIR__ . '/../app/Controllers/DosenController.php'; 
+require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php'; 
+
+
+
 $routes = [
 
     'GET' => [
@@ -26,7 +31,7 @@ $routes = [
 
         // Dosen
         '/dosen' => ['DosenController', 'index'],
-        '/dosen/detail' => ['DosenController', 'detail'],
+        
 
     ],
 

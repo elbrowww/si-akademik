@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -19,26 +19,30 @@
             <div class="card-body">
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="card-title mb-0">Data Dosen</h2>
-                        <a href="/si-akademik/public/mahasiswa" class="btn btn-primary">
+                    <h2 class="card-title mb-0">Data Dosen</h2>
+                    <a href="/si-akademik/public/mahasiswa" class="btn btn-primary">
                         Data Mahasiswa
-                        </a>
-                    </div>
+                    </a>
+                </div>
 
                 <table class="table table-bordered table-striped">
                     <thead class="table-dark">
                         <tr>
+                            <th>No</th>
                             <th>NIDN</th>
                             <th>Nama</th>
+                            <th>Bidang Keahlian</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <?php foreach ($dosen as $dsn): ?>
+                        <?php foreach ($dosen as $index => $dsn): ?>
                             <tr>
-                                <td><?= $dsn['nidn'] ?></td>
-                                <td><?= $dsn['nama'] ?></td>
+                                <td><?= $index + 1 ?></td>
+                                <td><?= htmlspecialchars($dsn['nidn']) ?></td>
+                                <td><?= htmlspecialchars($dsn['nama']) ?></td>
+                                <td><?= htmlspecialchars($dsn['bidang_keahlian']) ?></td>
                                 <td>
                                     <a href="/si-akademik/public/dosen/detail?nidn=<?= $dsn['nidn']; ?>"
                                         class="btn btn-primary btn-sm">
@@ -51,15 +55,11 @@
                 </table>
 
                 <div class="d-flex justify-content-between mt-4">
-
                     <!-- Button Kembali -->
-                    <a href="/si-akademik/public/" class="btn btn-secondary">
-                        Kembali ke Beranda
+                    <a href="/si-akademik/public/dashboard" class="btn btn-secondary">
+                        Dashboard
                     </a>
-
-
                 </div>
-
 
             </div>
         </div>

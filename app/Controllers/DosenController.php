@@ -1,23 +1,20 @@
 <?php
 
-require_once __DIR__ . '/../Models/dosen.php';
+require_once __DIR__ . '/../Models/Dosen.php';
 
 class DosenController
 {
-    public function index()
-    {
-        $model = new Dosen();
-        $dosen = $model->getAll();
+    private $model;
 
-        require_once __DIR__ . '/../Views/dosen/index.php';
+    public function __construct($pdo)
+    {
+        $this->model = new Dosen($pdo);
     }
 
-    public function detail()
+    public function index()
     {
-        $model = new Dosen();
-        $nidn = $_GET['nidn'] ?? null;
-        $dosen = $model->getByNidn($nidn);
+        $dosen = $this->model->getAll();
 
-        require_once __DIR__ . '/../Views/dosen/detail.php';
+        require_once __DIR__ . '/../Views/dosen/index.php';
     }
 }
