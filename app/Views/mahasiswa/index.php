@@ -31,6 +31,7 @@
                                 <th>NIM</th>
                                 <th>Nama</th>
                                 <th>Program Studi</th>
+                                <th>Dosen Pembimbing</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -41,6 +42,7 @@
                                     <td><?= $mhs['nim'] ?></td>
                                     <td><?= $mhs['nama'] ?></td>
                                     <td><?= $mhs['prodi'] ?></td>
+                                    <td><?= htmlspecialchars($mhs['nama_dosens'] ?? 'Belum ada'); ?></td>
                                     <td>
                                         <a href="/si-akademik/public/mahasiswa/detail?nim=<?= $mhs['nim']; ?>"
                                             class="btn btn-primary btn-sm">
