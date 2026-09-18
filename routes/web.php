@@ -3,8 +3,6 @@
 require_once __DIR__ . '/../app/Controllers/DosenController.php'; 
 require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php'; 
 
-
-
 $routes = [
 
     'GET' => [
@@ -29,9 +27,11 @@ $routes = [
         '/mahasiswa/session' => ['MahasiswaController', 'sessionDemo'],
         '/mahasiswa/cookie' => ['MahasiswaController', 'cookieDemo'],
 
-        // Dosen
+        // Dosen (CRUD - GET)
         '/dosen' => ['DosenController', 'index'],
-        
+        '/dosen/create' => ['DosenController', 'create'],
+        '/dosen/edit' => ['DosenController', 'edit'],
+        '/dosen/delete' => ['DosenController', 'delete'],
 
     ],
 
@@ -42,6 +42,10 @@ $routes = [
 
         // Simpan Mahasiswa
         '/mahasiswa' => ['MahasiswaController', 'store'],
+
+        // Dosen (CRUD - POST)
+        '/dosen/store' => ['DosenController', 'store'],
+        '/dosen/update' => ['DosenController', 'update'],
 
     ],
 

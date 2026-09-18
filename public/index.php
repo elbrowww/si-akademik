@@ -31,8 +31,11 @@ if (isset($routes[$method][$uri])) {
         '/mahasiswa/create',
         '/mahasiswa/session',
         '/mahasiswa/cookie',
+    
         '/dosen',
-        '/dosen/detail'
+        '/dosen/create',
+        '/dosen/edit',
+        '/dosen/delete'
     ];
 
     if (in_array($uri, $protectedRoutes)) {

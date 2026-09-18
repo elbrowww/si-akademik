@@ -4,22 +4,26 @@ require_once __DIR__ . '/../Models/Mahasiswa.php';
 
 class MahasiswaController
 {
-  
+    private $pdo;
+
+    public function __construct($pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
     // MENAMPILKAN DAFTAR MAHASISWA
     public function index()
     {
-        $model = new Mahasiswa();
+        $model = new Mahasiswa($this->pdo);
         $mahasiswa = $model->getAll();
 
         require_once __DIR__ . '/../Views/mahasiswa/index.php';
     }
 
-
-   
     // MENAMPILKAN DETAIL MAHASISWA
     public function detail()
     {
-        $model = new Mahasiswa();
+        $model = new Mahasiswa($this->pdo);
 
         $nim = $_GET['nim'] ?? null;
 

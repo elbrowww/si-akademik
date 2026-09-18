@@ -20,12 +20,18 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="card-title mb-0">Data Dosen</h2>
-                    <a href="/si-akademik/public/mahasiswa" class="btn btn-primary">
-                        Data Mahasiswa
-                    </a>
+                    <div>
+                        <!-- Tombol Tambah Dosen -->
+                        <a href="/si-akademik/public/dosen/create" class="btn btn-success">
+                            + Tambah Dosen
+                        </a>
+                        <a href="/si-akademik/public/mahasiswa" class="btn btn-primary">
+                            Data Mahasiswa
+                        </a>
+                    </div>
                 </div>
 
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th>No</th>
@@ -37,20 +43,34 @@
                     </thead>
 
                     <tbody>
-                        <?php foreach ($dosen as $index => $dsn): ?>
+                        <?php if (!empty($dosen)): ?>
+                            <?php foreach ($dosen as $index => $dsn): ?>
+                                <tr>
+                                    <td><?= $index + 1 ?></td>
+                                    <td><?= htmlspecialchars($dsn['nidn']) ?></td>
+                                    <td><?= htmlspecialchars($dsn['nama']) ?></td>
+                                    <td><?= htmlspecialchars($dsn['bidang_keahlian']) ?></td>
+                                    <td>
+                                        <!-- Tombol Edit -->
+                                        <a href="/si-akademik/public/dosen/edit?id=<?= $dsn['id']; ?>" 
+                                           class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
+
+                                        <!-- Tombol Hapus dengan Konfirmasi -->
+                                        <a href="/si-akademik/public/dosen/delete?id=<?= $dsn['id']; ?>" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Hapus data ini?');">
+                                            Hapus
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                                <td><?= $index + 1 ?></td>
-                                <td><?= htmlspecialchars($dsn['nidn']) ?></td>
-                                <td><?= htmlspecialchars($dsn['nama']) ?></td>
-                                <td><?= htmlspecialchars($dsn['bidang_keahlian']) ?></td>
-                                <td>
-                                    <a href="/si-akademik/public/dosen/detail?nidn=<?= $dsn['nidn']; ?>"
-                                        class="btn btn-primary btn-sm">
-                                        Detail
-                                    </a>
-                                </td>
+                                <td colspan="5" class="text-center">Belum ada data dosen.</td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
 
