@@ -1,21 +1,23 @@
 <?php
 
 require_once __DIR__ . '/../Models/Mahasiswa.php';
+require_once __DIR__ . '/../Repositories/MahasiswaRepository.php';
 
 class MahasiswaController
 {
-    private $pdo;
+    private $repository;
 
-    public function __construct($pdo)
+    // Constructor Injection: controller menerima MahasiswaRepository,
+    // sehingga controller tidak lagi membuat koneksi database sendiri.
+    public function __construct(MahasiswaRepository $repository)
     {
-        $this->pdo = $pdo;
+        $this->repository = $repository;
     }
 
     // MENAMPILKAN DAFTAR MAHASISWA
     public function index()
     {
-        $model = new Mahasiswa($this->pdo);
-        $mahasiswa = $model->getAll();
+        $mahasiswa = $this->repository->getAll();
 
         require_once __DIR__ . '/../Views/mahasiswa/index.php';
     }
@@ -23,8 +25,6 @@ class MahasiswaController
     // MENAMPILKAN DETAIL MAHASISWA
     public function detail()
     {
-        $model = new Mahasiswa($this->pdo);
-
         $nim = $_GET['nim'] ?? null;
 
         if (!$nim) {
@@ -32,7 +32,7 @@ class MahasiswaController
             exit;
         }
 
-        $mahasiswa = $model->getByNim($nim);
+        $mahasiswa = $this->repository->getByNim($nim);
 
         if (!$mahasiswa) {
             echo "Data mahasiswa tidak ditemukan.";
@@ -208,339 +208,119 @@ class MahasiswaController
         ";
     }
 
-  
+
     // FORM TAMBAH MAHASISWA
     public function create()
     {
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
+        $errors = $_SESSION['form_errors'] ?? [];
+        unset($_SESSION['form_errors']);
 
-        <head>
-
-            <meta charset='UTF-8'>
-
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
-
-            <title>Tambah Mahasiswa</title>
-
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
-
-        </head>
-
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body'>
-
-                        <h2 class='mb-4'>
-                            Tambah Mahasiswa
-                        </h2>
-
-                        <form
-                            method='POST'
-                            action='/si-akademik/public/mahasiswa'
-                        >
-
-                            <div class='mb-3'>
-
-                                <label class='form-label'>
-                                    NIM
-                                </label>
-
-                                <input
-                                    type='text'
-                                    name='nim'
-                                    class='form-control'
-                                    placeholder='Masukkan NIM'
-                                >
-
-                            </div>
-
-                            <div class='mb-3'>
-
-                                <label class='form-label'>
-                                    Nama
-                                </label>
-
-                                <input
-                                    type='text'
-                                    name='nama'
-                                    class='form-control'
-                                    placeholder='Masukkan Nama'
-                                >
-
-                            </div>
-
-                            <div class='mb-3'>
-
-                                <label class='form-label'>
-                                    Program Studi
-                                </label>
-
-                                <input
-                                    type='text'
-                                    name='prodi'
-                                    class='form-control'
-                                    placeholder='Masukkan Program Studi'
-                                >
-
-                            </div>
-
-                            <button
-                                type='submit'
-                                class='btn btn-primary'
-                            >
-                                Simpan
-                            </button>
-
-                            <a
-                                href='/si-akademik/public/mahasiswa'
-                                class='btn btn-secondary'
-                            >
-                                Kembali
-                            </a>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        require_once __DIR__ . '/../Views/mahasiswa/create.php';
     }
 
 
-    // MEMPROSES FORM POST
+    // MEMPROSES FORM POST (validasi dilakukan lewat setter di entity Mahasiswa)
     public function store()
     {
-        $nim = trim($_POST['nim'] ?? '');
-        $nama = trim($_POST['nama'] ?? '');
-        $prodi = trim($_POST['prodi'] ?? '');
+        try {
+            $mahasiswa = new Mahasiswa();
+            $mahasiswa->setNim($_POST['nim'] ?? '');
+            $mahasiswa->setNama($_POST['nama'] ?? '');
+            $mahasiswa->setProdi($_POST['prodi'] ?? '');
+            $mahasiswa->setDosenId($_POST['dosen_id'] ?? '');
 
-        // VALIDASI INPUT
-        $errors = [];
+            $this->repository->create($mahasiswa);
 
-        if ($nim === '') {
-            $errors[] = 'NIM wajib diisi.';
+            // SESSION
+            $_SESSION['nim_mahasiswa'] = $mahasiswa->getNim();
+            $_SESSION['nama_mahasiswa'] = $mahasiswa->getNama();
+            $_SESSION['prodi_mahasiswa'] = $mahasiswa->getProdi();
+
+            // COOKIE
+            setcookie(
+                'nama_pengunjung',
+                $mahasiswa->getNama(),
+                time() + 3600,
+                '/'
+            );
+
+            header('Location: /si-akademik/public/mahasiswa');
+            exit;
+        } catch (InvalidArgumentException $e) {
+            $_SESSION['form_errors'] = [$e->getMessage()];
+            header('Location: /si-akademik/public/mahasiswa/create');
+            exit;
+        }
+    }
+
+
+    // FORM EDIT MAHASISWA
+    public function edit()
+    {
+        $nim = $_GET['nim'] ?? null;
+
+        if (!$nim) {
+            echo "NIM mahasiswa tidak ditemukan.";
+            exit;
         }
 
-        if ($nama === '') {
-            $errors[] = 'Nama wajib diisi.';
+        $mahasiswa = $this->repository->getByNim($nim);
+
+        if (!$mahasiswa) {
+            echo "Data mahasiswa tidak ditemukan.";
+            exit;
         }
 
-        if ($prodi === '') {
-            $errors[] = 'Program Studi wajib diisi.';
+        $errors = $_SESSION['form_errors'] ?? [];
+        unset($_SESSION['form_errors']);
+
+        require_once __DIR__ . '/../Views/mahasiswa/edit.php';
+    }
+
+
+    // MEMPROSES UPDATE MAHASISWA
+    public function update()
+    {
+        $nim = $_GET['nim'] ?? null;
+
+        if (!$nim) {
+            echo "NIM mahasiswa tidak ditemukan.";
+            exit;
         }
 
+        try {
+            $mahasiswa = new Mahasiswa();
+            $mahasiswa->setNim($nim);
+            $mahasiswa->setNama($_POST['nama'] ?? '');
+            $mahasiswa->setProdi($_POST['prodi'] ?? '');
+            $mahasiswa->setDosenId($_POST['dosen_id'] ?? '');
 
-        // JIKA VALIDASI GAGAL
-        if (!empty($errors)) {
+            $this->repository->update($nim, $mahasiswa);
 
-            echo "
-            <!DOCTYPE html>
-            <html lang='id'>
+            header('Location: /si-akademik/public/mahasiswa');
+            exit;
+        } catch (InvalidArgumentException $e) {
+            $_SESSION['form_errors'] = [$e->getMessage()];
+            header('Location: /si-akademik/public/mahasiswa/edit?nim=' . urlencode($nim));
+            exit;
+        }
+    }
 
-            <head>
 
-                <meta charset='UTF-8'>
+    // MENGHAPUS MAHASISWA
+    public function delete()
+    {
+        $nim = $_GET['nim'] ?? null;
 
-                <meta
-                    name='viewport'
-                    content='width=device-width, initial-scale=1.0'
-                >
-
-                <title>Validasi Form</title>
-
-                <link
-                    href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                    rel='stylesheet'
-                >
-
-            </head>
-
-            <body>
-
-                <div class='container mt-5'>
-
-                    <div class='card shadow'>
-
-                        <div class='card-body'>
-
-                            <h2 class='mb-4'>
-                                Validasi Form
-                            </h2>
-
-                            <div class='alert alert-danger'>
-
-                                <strong>
-                                    Terdapat kesalahan:
-                                </strong>
-
-                                <ul class='mb-0 mt-2'>
-            ";
-
-            foreach ($errors as $error) {
-
-                echo "
-                                    <li>
-                                        $error
-                                    </li>
-                ";
-            }
-
-            echo "
-                                </ul>
-
-                            </div>
-
-                            <a
-                                href='/si-akademik/public/mahasiswa/create'
-                                class='btn btn-primary'
-                            >
-                                Kembali ke Form
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </body>
-
-            </html>
-            ";
-
-            return;
+        if (!$nim) {
+            echo "NIM mahasiswa tidak ditemukan.";
+            exit;
         }
 
+        $this->repository->delete($nim);
 
-        // SESSION
-        $_SESSION['nim_mahasiswa'] = $nim;
-        $_SESSION['nama_mahasiswa'] = $nama;
-        $_SESSION['prodi_mahasiswa'] = $prodi;
-
-
-        // COOKIE
-        setcookie(
-            'nama_pengunjung',
-            $nama,
-            time() + 3600,
-            '/'
-        );
-
-
-        // HASIL POST
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
-
-        <head>
-
-            <meta charset='UTF-8'>
-
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
-
-            <title>Data Berhasil</title>
-
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
-
-        </head>
-
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body'>
-
-                        <h2 class='text-success mb-4'>
-                            Form Berhasil Dikirim
-                        </h2>
-
-                        <div class='alert alert-success'>
-
-                            Data berhasil diterima menggunakan
-                            <strong>POST</strong>.
-
-                        </div>
-
-                        <table class='table table-bordered'>
-
-                            <tr>
-                                <th>NIM</th>
-                                <td>$nim</td>
-                            </tr>
-
-                            <tr>
-                                <th>Nama</th>
-                                <td>$nama</td>
-                            </tr>
-
-                            <tr>
-                                <th>Program Studi</th>
-                                <td>$prodi</td>
-                            </tr>
-
-                        </table>
-
-                        <div class='alert alert-primary mt-4'>
-
-                            <strong>Session:</strong><br>
-
-                            Data mahasiswa berhasil disimpan
-                            ke dalam Session.
-
-                        </div>
-
-                        <div class='alert alert-warning'>
-
-                            <strong>Cookie:</strong><br>
-
-                            Cookie nama pengunjung berhasil dibuat
-                            dan berlaku selama 1 jam.
-
-                        </div>
-
-                        <a
-                            href='/si-akademik/public/mahasiswa'
-                            class='btn btn-secondary'
-                        >
-                            Kembali ke Mahasiswa
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        header('Location: /si-akademik/public/mahasiswa');
+        exit;
     }
 
     // MENAMPILKAN SESSIO

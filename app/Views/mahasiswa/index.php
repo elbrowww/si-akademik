@@ -20,12 +20,17 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2 class="card-title mb-0">Data Mahasiswa</h2>
-                        <a href="/si-akademik/public/dosen" class="btn btn-primary">
-                        Data Dosen
-                        </a>
+                        <div>
+                            <a href="/si-akademik/public/mahasiswa/create" class="btn btn-success">
+                                + Tambah Mahasiswa
+                            </a>
+                            <a href="/si-akademik/public/dosen" class="btn btn-primary">
+                                Data Dosen
+                            </a>
+                        </div>
                     </div>
 
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped align-middle">
                         <thead class="table-dark">
                             <tr>
                                 <th>NIM</th>
@@ -37,20 +42,33 @@
                         </thead>
 
                         <tbody>
-                            <?php foreach ($mahasiswa as $mhs): ?>
+                            <?php if (!empty($mahasiswa)): ?>
+                                <?php foreach ($mahasiswa as $mhs): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($mhs->getNim()) ?></td>
+                                        <td><?= htmlspecialchars($mhs->getNama()) ?></td>
+                                        <td><?= htmlspecialchars($mhs->getProdi()) ?></td>
+                                        <td><?= htmlspecialchars($mhs->getNamaDosen() ?? 'Belum ada') ?></td>
+                                        <td>
+
+                                            <a href="/si-akademik/public/mahasiswa/edit?nim=<?= urlencode($mhs->getNim()); ?>"
+                                            class="btn btn-warning btn-sm">
+                                                Edit
+                                            </a>
+
+                                            <a href="/si-akademik/public/mahasiswa/delete?nim=<?= urlencode($mhs->getNim()); ?>"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Hapus data ini?');">
+                                                Hapus
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
                                 <tr>
-                                    <td><?= $mhs['nim'] ?></td>
-                                    <td><?= $mhs['nama'] ?></td>
-                                    <td><?= $mhs['prodi'] ?></td>
-                                    <td><?= htmlspecialchars($mhs['nama_dosens'] ?? 'Belum ada'); ?></td>
-                                    <td>
-                                        <a href="/si-akademik/public/mahasiswa/detail?nim=<?= $mhs['nim']; ?>"
-                                            class="btn btn-primary btn-sm">
-                                            Detail
-                                        </a>
-                                    </td>
+                                    <td colspan="5" class="text-center">Belum ada data mahasiswa.</td>
                                 </tr>
-                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
 
@@ -60,8 +78,6 @@
                         <a href="/si-akademik/public/" class="btn btn-secondary">
                             Kembali ke Beranda
                         </a>
-
-                        
 
                     </div>
 

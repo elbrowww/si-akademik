@@ -29,6 +29,9 @@ if (isset($routes[$method][$uri])) {
         '/mahasiswa/detail',
         '/mahasiswa/search',
         '/mahasiswa/create',
+        '/mahasiswa/edit',
+        '/mahasiswa/update',
+        '/mahasiswa/delete',
         '/mahasiswa/session',
         '/mahasiswa/cookie',
     
@@ -46,8 +49,16 @@ if (isset($routes[$method][$uri])) {
     // CONTROLLER
     require_once __DIR__ . '/../app/Controllers/' . $controllerName . '.php';
 
-    // KIRIM PDO KE CONTROLLER
-    $controller = new $controllerName($pdo);
+    if ($controllerName === 'MahasiswaController') {
+        // Dependency Injection: Database -> MahasiswaRepository -> MahasiswaController
+        require_once __DIR__ . '/../app/Repositories/MahasiswaRepository.php';
+
+        $repository = new MahasiswaRepository($database);
+        $controller = new MahasiswaController($repository);
+    } else {
+        // Controller lain (Dosen, Auth) masih memakai $pdo langsung
+        $controller = new $controllerName($pdo);
+    }
 
     $controller->$action();
 
@@ -60,8 +71,10 @@ if (isset($routes[$method][$uri])) {
     AuthMiddleware::handle();
 
     require_once __DIR__ . '/../app/Controllers/MahasiswaController.php';
+    require_once __DIR__ . '/../app/Repositories/MahasiswaRepository.php';
 
-    $controller = new MahasiswaController($pdo);
+    $repository = new MahasiswaRepository($database);
+    $controller = new MahasiswaController($repository);
 
     $id = $matches[1];
 

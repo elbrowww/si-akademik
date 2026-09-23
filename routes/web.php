@@ -21,11 +21,9 @@ $routes = [
 
         // Mahasiswa
         '/mahasiswa' => ['MahasiswaController', 'index'],
-        '/mahasiswa/detail' => ['MahasiswaController', 'detail'],
-        '/mahasiswa/search' => ['MahasiswaController', 'search'],
         '/mahasiswa/create' => ['MahasiswaController', 'create'],
-        '/mahasiswa/session' => ['MahasiswaController', 'sessionDemo'],
-        '/mahasiswa/cookie' => ['MahasiswaController', 'cookieDemo'],
+        '/mahasiswa/edit' => ['MahasiswaController', 'edit'],
+        '/mahasiswa/delete' => ['MahasiswaController', 'delete'],
 
         // Dosen (CRUD - GET)
         '/dosen' => ['DosenController', 'index'],
@@ -42,6 +40,7 @@ $routes = [
 
         // Simpan Mahasiswa
         '/mahasiswa' => ['MahasiswaController', 'store'],
+        '/mahasiswa/update' => ['MahasiswaController', 'update'],
 
         // Dosen (CRUD - POST)
         '/dosen/store' => ['DosenController', 'store'],
